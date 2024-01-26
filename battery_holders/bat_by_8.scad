@@ -44,7 +44,7 @@ hole_depth = inside_height - hole_offset;
 hole_diameter = battery_diameter + 2 * battery_clearance;
 
 lid_inside_height = battery_height - inside_height + 2 + neck_height;
-lid_neck_inside_height = neck_height;
+lid_neck_inside_height = neck_height + 0.5;
 lid_neck_outside_height = lid_neck_inside_height * (1 + sin(22.5));
 
 bottle();
