@@ -1,0 +1,31 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "AA": {
+            "$fa": "2",
+            "$fs": "0.25",
+            "battery_clearance": "0.25",
+            "battery_diameter": "14.5",
+            "battery_height": "50.5",
+            "bottom_thick": "2",
+            "min_wall": "1.24",
+            "slop": "0.15",
+            "thread_pitch": "3.5",
+            "top_thick": "2"
+        },
+        "AAA": {
+            "$fa": "2",
+            "$fs": "0.25",
+            "battery_clearance": "0.25",
+            "battery_diameter": "10.5",
+            "battery_height": "44.5",
+            "bottom_thick": "2",
+            "label": "AAA",
+            "label_font_size": "12",
+            "min_wall": "1.24",
+            "slop": "0.15",
+            "thread_pitch": "2.5",
+            "top_thick": "2"
+        }
+    }
+}
