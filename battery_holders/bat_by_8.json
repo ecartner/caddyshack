@@ -8,9 +8,11 @@
             "battery_diameter": "14.5",
             "battery_height": "50.5",
             "bottom_thick": "2",
+            "label": "AA",
+            "label_font_size": "20",
             "min_wall": "1.24",
-            "slop": "0.15",
-            "thread_pitch": "3.5",
+            "side_wall": "2",
+            "thread_slop": "0.14999999999999999",
             "top_thick": "2"
         },
         "AAA": {
@@ -23,8 +25,8 @@
             "label": "AAA",
             "label_font_size": "12",
             "min_wall": "1.24",
-            "slop": "0.15",
-            "thread_pitch": "2.5",
+            "side_wall": "2",
+            "thread_slop": "0.14999999999999999",
             "top_thick": "2"
         }
     }

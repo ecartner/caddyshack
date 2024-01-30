@@ -1,5 +1,7 @@
 include <BOSL2/std.scad>
+include <BOSL2/rounding.scad>
 include <BOSL2/threading.scad>
+include <BOSL2/bottlecaps.scad>
 
 /* [Setup] */
 // Minimum fragment angle
@@ -14,41 +16,68 @@ battery_clearance = 0.25; // [0:0.05:1]
 label = "AA";
 
 /* [Geometry] */
+thread_slop = 0.15; //[0:0.05:1]
 bottom_thick = 2; // [1:0.1:6]
 top_thick = 2; // [1:0.1:6]
 side_wall = 2;//[1:0.1:6]
 min_wall = 1.24; // 0.01
-thread_pitch = 3.5;    //[2:0.5:6]
-slop = 0.15; //[0:0.05:3]
-chamfer = 1.4; //[0:0.2:4]
 label_font_size = 20; //[8:40]
 
 module __Customizer_Limit__() {}
 // Place constants that should not be displayed in the customizer here
 
+// If we fix the neck length at 10mm all of the following values
+// are constant for SP-400 sizes 28 to 75mm which will cover our needs
+H = 10;
+S = 1.17;
+P = 4.24;
+a = 2.39;
+b = 1.19;
+c = 1.02;
+
+pf1 = [[-P/2, -a/2],
+        [-a/2, -a/2],
+        [-c/2, 0],
+        [c/2, 0],
+        [a/2, -a/2],
+        [P/2, -a/2]];
+
+pf2 = round_corners(pf1, radius=0.5, closed=false);
+pf3 = reverse(xflip(pf2));// bottle_profile = select(right(-a/2 + 1/2-S,p=pf2), 1, -2) / P;
+
+bottle_profile = _sp_thread_profile(6, a, S, "L");
+// oprofile = select(right(-a/2+1/2-S,p = pf3), 1, -2) / P;
+oprofile = _sp_thread_profile(6, a, S+0.75*a, "L", flip=true);
+bounds = pointlist_bounds(oprofile);
+cap_profile = fwd(-bounds[0].y,yflip(oprofile));
+
 packing_radius = (battery_diameter + min_wall) / 2 + battery_clearance;
 enclosing_radius = (1 + 1 / sin(180 / 7)) * packing_radius;
 hole_pattern_radius = packing_radius / sin(180 / 7);
 
-thread_depth = 1.07217 * 5 / 8 * cos(30) * thread_pitch;
-thread_od = 2 * (enclosing_radius + side_wall + thread_depth);
+bottle_id = 2 * enclosing_radius - min_wall;
+T = bottle_id + 2*b + 2*side_wall;
+space = a/10 + 2 * thread_slop;
 
-bottle_id = 2 * enclosing_radius;
-neck_height = 3 * thread_pitch;
-inside_height = 0.75 * battery_height;
-bottle_od = 2 * slop + thread_od + 2 * side_wall;
-bottle_od_height = inside_height - neck_height + bottom_thick;
+bottle_inside_height = 0.75 * battery_height;
+bottle_od = T + space + 2*side_wall;
+bottle_od_height = bottle_inside_height - H + bottom_thick;
 
 hole_offset = 0.2 * battery_height;
-hole_depth = inside_height - hole_offset;
+hole_depth = bottle_inside_height - hole_offset;
 hole_diameter = battery_diameter + 2 * battery_clearance;
 
-lid_inside_height = battery_height - inside_height + 2 + neck_height;
-lid_neck_inside_height = neck_height + 0.5;
-lid_neck_outside_height = lid_neck_inside_height * (1 + sin(22.5));
+cap_inside_height = battery_height - bottle_inside_height + 2 + H;
+cap_shoulder_width = (bottle_od - T + 2*b)/2;
 
-bottle();
-back(bottle_od + 10) up(lid_inside_height + top_thick) lid();
+up(bottle_inside_height + bottom_thick) bottle();
+
+diff("cut") 
+back(bottle_od + 10) up(cap_inside_height - H) simple_cap(anchor=BOT) {
+    position(BOT) cyl(d=T-2*b, h=cap_inside_height - H, anchor=TOP,chamfer2 = - cap_shoulder_width, chamfer1 = 0.8)
+    tag("cut") position(BOT) zrot(180) down(0.01) text3d(label, h=0.2, anchor=BOT,size=label_font_size,atype="ycenter");
+    tag("cut") position(TOP) cyl(d=bottle_id, h = cap_inside_height, anchor=TOP);
+};
 
 module battery_holes() {
     arc_copies(7, r = hole_pattern_radius) {
@@ -58,43 +87,28 @@ module battery_holes() {
 }
 
 module bottle() {
-    diff("hole")
-    cyl(h=bottle_od_height, d = bottle_od, anchor=BOTTOM, chamfer1=chamfer) {
-        position(TOP) threaded_rod(
-            d = thread_od,
-            pitch = thread_pitch,
-            l = neck_height,
-            end_len = thread_pitch/2,
-            blunt_start = true,
-            anchor = BOT
-        ) {
-            tag("hole") {
-                position(TOP) up(0.01) cyl(h=inside_height - hole_depth, r = enclosing_radius, anchor=TOP) 
-                position(BOT) up(0.01) battery_holes();
-            }
-        };
+    difference() {
+        union() {
+            thread_helix(d=T-0.01, profile=bottle_profile, pitch=P, turns=1, lead_in = 2*a, anchor=TOP);
+            cyl(d=T-a,h=H,anchor=TOP) position(BOT) cyl(d=bottle_od,h=bottle_od_height, anchor=TOP, chamfer1 = 0.8);
+        }
+        up(0.1) cyl(d=T-a-2*side_wall,h=hole_offset, anchor=TOP)
+        position(BOT) up(0.01) battery_holes();
     }
 }
 
-module lid() {
-    diff("cut")
-    cyl(h=lid_neck_outside_height, d = bottle_od, anchor=TOP, chamfer1=2*side_wall) {
-        position(BOT)
-        cyl(h=lid_inside_height + top_thick - lid_neck_outside_height, d = bottle_id + 2*side_wall, anchor=TOP, chamfer1=chamfer){
-            tag("cut") position(BOT) zrot(180) text3d(label, h=0.2, anchor=BOT,size=label_font_size,atype="ycenter");
-        };
-        tag("cut") {
-            position(TOP) up(0.01) threaded_rod(
-                d = thread_od,
-                l = lid_neck_inside_height,
-                pitch = thread_pitch,
-                internal = true,
-                blunt_start = true,
-                $slop = slop,
-                anchor = TOP,
-                end_len1 = 0.5 * thread_pitch + 0.5,
-                end_len2 = 0.5 * thread_pitch 
-            ) position(TOP) cyl(h=lid_inside_height,d = bottle_id, anchor=TOP, chamfer2 = -side_wall);
+// Takes values it needs from globals and only does SP-400
+module simple_cap(anchor, spin, orient) {
+  attachable(anchor, spin, orient, r = bottle_od / 2, l = H + top_thick) {
+    xrot(180) up((H - top_thick) / 2) {
+        difference() {
+            up(top_thick) {
+                cyl(d=bottle_od, l=H+top_thick,anchor=TOP);
+            }
+            cyl(d=T+space, l=H+1, anchor=TOP);
         }
+        thread_helix(d=T+space -0.01, profile=cap_profile, pitch = P, turns = 1, lead_in = 2 * a, anchor=TOP, internal=true);
     }
+    children();
+  }
 }
