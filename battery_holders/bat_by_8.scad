@@ -35,18 +35,7 @@ a = 2.39;
 b = 1.19;
 c = 1.02;
 
-pf1 = [[-P/2, -a/2],
-        [-a/2, -a/2],
-        [-c/2, 0],
-        [c/2, 0],
-        [a/2, -a/2],
-        [P/2, -a/2]];
-
-pf2 = round_corners(pf1, radius=0.5, closed=false);
-pf3 = reverse(xflip(pf2));// bottle_profile = select(right(-a/2 + 1/2-S,p=pf2), 1, -2) / P;
-
 bottle_profile = _sp_thread_profile(6, a, S, "L");
-// oprofile = select(right(-a/2+1/2-S,p = pf3), 1, -2) / P;
 oprofile = _sp_thread_profile(6, a, S+0.75*a, "L", flip=true);
 bounds = pointlist_bounds(oprofile);
 cap_profile = fwd(-bounds[0].y,yflip(oprofile));
@@ -90,7 +79,7 @@ module bottle() {
     difference() {
         union() {
             thread_helix(d=T-0.01, profile=bottle_profile, pitch=P, turns=1, lead_in = 2*a, anchor=TOP);
-            cyl(d=T-a,h=H,anchor=TOP) position(BOT) cyl(d=bottle_od,h=bottle_od_height, anchor=TOP, chamfer1 = 0.8);
+            cyl(d=T-a,h=H,anchor=TOP) position(BOT) cyl(d=bottle_od,h=bottle_od_height, anchor=TOP, chamfer1 = 0.8, $fa=12);
         }
         up(0.1) cyl(d=T-a-2*side_wall,h=hole_offset, anchor=TOP)
         position(BOT) up(0.01) battery_holes();
@@ -103,7 +92,8 @@ module simple_cap(anchor, spin, orient) {
     xrot(180) up((H - top_thick) / 2) {
         difference() {
             up(top_thick) {
-                cyl(d=bottle_od, l=H+top_thick,anchor=TOP);
+                cyl(d=bottle_od, l=H+top_thick,anchor=TOP,
+                tex_taper=0, texture="trunc_ribs", tex_size=[3,3], tex_style="min_edge");
             }
             cyl(d=T+space, l=H+1, anchor=TOP);
         }
