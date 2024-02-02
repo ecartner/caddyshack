@@ -14,6 +14,7 @@ battery_diameter = 14.5;
 battery_height = 50.5;
 battery_clearance = 0.25; // [0:0.05:1]
 label = "AA";
+battery_count = 8; // [8, 16]
 
 /* [Geometry] */
 thread_slop = 0.15; //[0:0.05:1]
@@ -40,11 +41,13 @@ oprofile = _sp_thread_profile(6, a, S+0.75*a, "L", flip=true);
 bounds = pointlist_bounds(oprofile);
 cap_profile = fwd(-bounds[0].y,yflip(oprofile));
 
-packing_radius = (battery_diameter + min_wall) / 2 + battery_clearance;
-enclosing_radius = (1 + 1 / sin(180 / 7)) * packing_radius;
-hole_pattern_radius = packing_radius / sin(180 / 7);
+r_p = (battery_diameter + min_wall) / 2 + battery_clearance;
+r_e8 = (1 + 1 / sin(180 / 7)) * r_p;
+r_e16 = 4.615 * r_p;
+r_e = battery_count == 16 ? r_e16 : r_e8;
 
-bottle_id = 2 * enclosing_radius - min_wall;
+bottle_id = 2 * r_e - min_wall;
+
 T = bottle_id + 2*b + 2*side_wall;
 space = a/10 + 2 * thread_slop;
 
@@ -68,11 +71,32 @@ back(bottle_od + 10) up(cap_inside_height - H) simple_cap(anchor=BOT) {
     tag("cut") position(TOP) cyl(d=bottle_id, h = cap_inside_height, anchor=TOP);
 };
 
-module battery_holes() {
-    arc_copies(7, r = hole_pattern_radius) {
+module battery_holes_8() {
+    r_c = r_p / sin(180/7);
+    arc_copies(7, r = r_c) {
     cyl(d = hole_diameter, h=hole_depth, anchor = TOP);
     }
     cyl(d = hole_diameter, h = hole_depth, anchor = TOP);
+}
+
+module battery_holes_16() {
+    r_c = r_e16 - r_p;
+    a = asin(1/3.615);
+    sa = 90 - 10 * a;
+    ea = 90 + 10 * a;
+
+    ts = [[0, -1.811],
+          [1.606, -0.619],
+          [1, 1.287],
+          [-1, 1.287],
+          [-1.606, -0.619]
+         ] * r_p;
+
+    arc_copies(n = 11, r = r_c, sa = sa, ea = ea)
+    cyl(d = hole_diameter, h = hole_depth, anchor = TOP);
+    for (t = ts) {
+    translate(t)   cyl(d = hole_diameter, h = hole_depth, anchor = TOP);
+    }
 }
 
 module bottle() {
@@ -82,7 +106,7 @@ module bottle() {
             cyl(d=T-a,h=H,anchor=TOP) position(BOT) cyl(d=bottle_od,h=bottle_od_height, anchor=TOP, chamfer1 = 0.8, $fa=12);
         }
         up(0.1) cyl(d=T-a-2*side_wall,h=hole_offset, anchor=TOP)
-        position(BOT) up(0.01) battery_holes();
+        position(BOT) up(0.01) if (battery_count == 16) { battery_holes_16();} else {battery_holes_8();}
     }
 }
 
