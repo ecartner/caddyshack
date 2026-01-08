@@ -13,16 +13,21 @@ $fa = 4;
 $fs = 0.25;
 // Thread slop
 $slop = 0.15;
+// Render sectional view of container
+section_view = false;
 
 /* [Container] */
 // Minimum neck inner diameter (mm)
 min_neck_id = 52; // [13:112]
 // Neck wall thickness (mm)
 neck_wall = 2.0; // 0.01
+// Wall thickness in main body (mm)
+body_wall = 2.0; // 0.01
 // Container interior height (mm)
 interior_height = 40; // [20:160]
 bottom_thick = 2; // 0.1
 bottom_inner_chamfer = 2; // 0.1
+taper_inner_walls = true;
 
 /* [Body Exterior] */
 // Outside wall texture pattern
@@ -67,37 +72,64 @@ neck_holdback = 0.2;
 
 space = sp_row[8] / 5 + 2 * $slop;
 lid_od = thread_od + space + 2 * lid_wall;
-body_height = interior_height - neck_height + neck_holdback + bottom_thick;
 
-if (texture == "none") {
-  diff("cut")
-    cyl(
-      h=body_height,
-      d=lid_od,
-      anchor=BOT,
-      chamfer1=bottom_outside_chamfer,
-    ) {
-      attach(TOP, BOT) down(neck_holdback) sp_neck(thread_od, 400, id=neck_id);
-      tag("cut") position(TOP) cyl(h=body_height - bottom_thick, d=neck_id, chamfer1=bottom_inner_chamfer, extra2=0.1, anchor=TOP);
-    }
+body_od = lid_od;
+max_body_id = taper_inner_walls ? body_od - 2 * body_wall : neck_id;
+body_height = interior_height - neck_height + neck_holdback + bottom_thick;
+total_height = body_height + neck_height;
+delta_ir = (max_body_id - neck_id) / 2;
+
+max_dim = lid_od > total_height ? lid_od : total_height;
+
+if (section_view) {
+  back_half(s=max_dim * 2) main();
 } else {
-  diff("cut")
-    cyl(
-      h=body_height,
-      d=lid_od,
-      anchor=BOT,
-      texture=texture,
-      tex_size=texture_grid,
-      tex_depth=texture_depth,
-      tex_taper=texture_taper,
-    ) {
-      attach(TOP, BOT) down(neck_holdback) sp_neck(thread_od, 400, id=neck_id);
-      tag("cut") position(TOP) cyl(h=body_height - bottom_thick, d=neck_id, chamfer1=bottom_inner_chamfer, extra2=0.1, anchor=TOP);
-    }
+  main();
 }
 
-back(lid_od + 10)
-  diff("cut")
-    sp_cap(diam=thread_od, type=400, wall=lid_wall, anchor=BOT, texture=lid_pattern)
-      position(BOT)
-        tag("cut") text3d(label_text, h=0.2, anchor=TOP, size=label_font_size, atype="ycenter", font=font, orient=DOWN);
+module main() {
+  if (texture == "none") {
+    diff("cut")
+      cyl(
+        h=body_height,
+        d=body_od,
+        anchor=BOT,
+        chamfer1=bottom_outside_chamfer,
+      ) {
+        attach(TOP, BOT) down(neck_holdback) sp_neck(thread_od, 400, id=neck_id);
+        tag("cut") position(TOP) cutout();
+      }
+  } else {
+    diff("cut")
+      cyl(
+        h=body_height,
+        d=body_od,
+        anchor=BOT,
+        texture=texture,
+        tex_size=texture_grid,
+        tex_depth=texture_depth,
+        tex_taper=texture_taper,
+      ) {
+        attach(TOP, BOT) down(neck_holdback) sp_neck(thread_od, 400, id=neck_id);
+        tag("cut") position(TOP) cutout();
+      }
+  }
+
+  back(lid_od + 10)
+    diff("cut")
+      sp_cap(diam=thread_od, type=400, wall=lid_wall, anchor=BOT, texture=lid_pattern)
+        position(BOT)
+          tag("cut") text3d(label_text, h=0.2, anchor=TOP, size=label_font_size, atype="ycenter", font=font, orient=DOWN);
+}
+
+module cutout() {
+  cyl(h=neck_wall, d=neck_id, anchor=TOP, extra2=0.1)
+    position(BOT) cyl(
+        h=body_height - bottom_thick - neck_wall,
+        d=max_body_id,
+        chamfer1=bottom_inner_chamfer,
+        chamfer2=delta_ir,
+        extra2=0.1,
+        anchor=TOP,
+      );
+}
