@@ -15,14 +15,12 @@ $fs = 0.25;
 $slop = 0.15;
 
 /* [Container] */
-// Thread outside diameter
-thread_od = 60; // [18, 20, 22, 24, 28, 30, 33, 35, 38, 40, 43, 45, 48, 51, 53, 58, 60, 63, 66, 70, 75, 77, 83, 89, 100, 110, 120]
-// Neck wall thickness
+// Minimum neck inner diameter (mm)
+min_neck_id = 52; // [13:112]
+// Neck wall thickness (mm)
 neck_wall = 2.0; // 0.01
-// Body wall thickness
-body_wall = 2.88;
-// Container height below neck
-height = 40; // [10:160]
+// Container interior height (mm)
+interior_height = 40; // [20:160]
 bottom_thick = 2; // 0.1
 bottom_outside_chamfer = 2; // 0.1
 bottom_inner_chamfer = 2; // 0.1
@@ -37,11 +35,14 @@ font = "Liberation Sans:style=Bold";
 lid_pattern = "ribbed"; // [none, ribbed, knurled]
 
 /* [Hidden] */
-sp_row = sp400_row(thread_od);
+sp_row = sp400_row_for_neck_id(min_neck_id, neck_wall);
+thread_od = sp_row[0];
 neck_od = sp_row[6];
 neck_id = neck_od - 2 * neck_wall;
+neck_height = sp_row[3];
 
 lid_height = sp_row[3] + lid_wall - 0.5;
+neck_holdback = 0.2;
 
 /**
  * sp_cap uses the thread profile height / 5 + 2 * $slop as the additional
@@ -51,21 +52,21 @@ lid_height = sp_row[3] + lid_wall - 0.5;
 
 space = sp_row[8] / 5 + 2 * $slop;
 lid_od = thread_od + space + 2 * lid_wall;
+body_height = interior_height - neck_height + neck_holdback + bottom_thick;
 
 diff("cut")
-cyl(h = height,
-    d = lid_od,
-    anchor = BOT,
-    chamfer1 = bottom_outside_chamfer,
-    ) {
-
-        position(TOP) down(0.1) sp_neck(thread_od, 400, id = neck_id, anchor=BOT);
-        tag("cut") position(TOP) cyl(h=height - bottom_thick, d = neck_id, anchor=TOP, chamfer1 = bottom_inner_chamfer, extra2=0.1);
-}
+  cyl(
+    h=body_height,
+    d=lid_od,
+    anchor=BOT,
+    chamfer1=bottom_outside_chamfer,
+  ) {
+    attach(TOP, BOT) down(neck_holdback) sp_neck(thread_od, 400, id=neck_id);
+    tag("cut") attach(TOP, TOP) cyl(h=body_height - bottom_thick, d=neck_id, chamfer1=bottom_inner_chamfer, extra2=0.1);
+  }
 
 back(lid_od + 10)
-diff("cut") 
-sp_cap(diam = thread_od, type = 400, wall = lid_wall, anchor = BOT, texture=lid_pattern) {
-    position(BOT)
-    tag("cut") text3d(label_text, h=0.2, anchor=TOP, size=label_font_size, atype="ycenter", font=font, orient=DOWN);
-}
+  diff("cut")
+    sp_cap(diam=thread_od, type=400, wall=lid_wall, anchor=BOT, texture=lid_pattern)
+      position(BOT)
+        tag("cut") text3d(label_text, h=0.2, anchor=TOP, size=label_font_size, atype="ycenter", font=font, orient=DOWN);
