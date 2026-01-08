@@ -63,7 +63,7 @@ function sp400_row_for_thread_od(target_od) =
   matches[0];
 
 function sp400_max_neck_id(neck_wall) =
-  let (max_od = SP400[len(SP400) - 1][1])
+  let (max_od = SP400[len(SP400) - 1][6])
   max_od - 2 * neck_wall;
 
 function sp400_row_for_neck_id(neck_id, neck_wall) =
