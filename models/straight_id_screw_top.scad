@@ -22,8 +22,23 @@ neck_wall = 2.0; // 0.01
 // Container interior height (mm)
 interior_height = 40; // [20:160]
 bottom_thick = 2; // 0.1
-bottom_outside_chamfer = 2; // 0.1
 bottom_inner_chamfer = 2; // 0.1
+
+/* [Body Exterior] */
+// Outside wall texture pattern
+texture = "none"; // [none, bricks, checkers, cones, cubes, diamonds, dimples, dots, hex_grid, hills, pyramids, ribs, rough, tri_grid, trunc_diamonds, trunc_pyramids, trunc_ribs, wave_ribs]
+
+// Only applies to "none" texture
+bottom_outside_chamfer = 2; // 0.1
+
+// Depth 
+texture_depth = 0.5; // [-2:0.1:2]
+
+// Tile size (mm)
+texture_grid = [14, 14]; // [5:50]
+
+// Length of transition from full texture to none
+texture_taper = 0.1; // [0:0.05:0.5]
 
 /* [Lid] */
 // Lid wall thickness
@@ -54,16 +69,32 @@ space = sp_row[8] / 5 + 2 * $slop;
 lid_od = thread_od + space + 2 * lid_wall;
 body_height = interior_height - neck_height + neck_holdback + bottom_thick;
 
-diff("cut")
-  cyl(
-    h=body_height,
-    d=lid_od,
-    anchor=BOT,
-    chamfer1=bottom_outside_chamfer,
-  ) {
-    attach(TOP, BOT) down(neck_holdback) sp_neck(thread_od, 400, id=neck_id);
-    tag("cut") attach(TOP, TOP) cyl(h=body_height - bottom_thick, d=neck_id, chamfer1=bottom_inner_chamfer, extra2=0.1);
-  }
+if (texture == "none") {
+  diff("cut")
+    cyl(
+      h=body_height,
+      d=lid_od,
+      anchor=BOT,
+      chamfer1=bottom_outside_chamfer,
+    ) {
+      attach(TOP, BOT) down(neck_holdback) sp_neck(thread_od, 400, id=neck_id);
+      tag("cut") position(TOP) cyl(h=body_height - bottom_thick, d=neck_id, chamfer1=bottom_inner_chamfer, extra2=0.1, anchor=TOP);
+    }
+} else {
+  diff("cut")
+    cyl(
+      h=body_height,
+      d=lid_od,
+      anchor=BOT,
+      texture=texture,
+      tex_size=texture_grid,
+      tex_depth=texture_depth,
+      tex_taper=texture_taper,
+    ) {
+      attach(TOP, BOT) down(neck_holdback) sp_neck(thread_od, 400, id=neck_id);
+      tag("cut") position(TOP) cyl(h=body_height - bottom_thick, d=neck_id, chamfer1=bottom_inner_chamfer, extra2=0.1, anchor=TOP);
+    }
+}
 
 back(lid_od + 10)
   diff("cut")
