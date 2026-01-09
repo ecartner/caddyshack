@@ -1,5 +1,5 @@
 /**
- * Straight wall ID containers with screw on lids using SP-400 thread.
+ * Straight wall ID containers with screw on caps using SP-400 thread.
  * Thread size is picked from a list of the standard SP-400 sizes.
  **/
 include <BOSL2/std.scad>
@@ -27,34 +27,34 @@ bottom_thick = 2; // 0.1
 bottom_outside_chamfer = 2; // 0.1
 bottom_inner_chamfer = 2; // 0.1
 
-/* [Lid] */
-// Lid wall thickness
-lid_wall = 2.0; // 0.1
+/* [Cap] */
+// Cap wall thickness
+cap_wall = 2.0; // 0.1
 label_text = "";
 label_font_size = 15; //[8:40]
 font = "Liberation Sans:style=Bold";
-// Lid outside texture
-lid_pattern = "ribbed"; // [none, ribbed, knurled]
+// Cap outside texture
+cap_pattern = "ribbed"; // [none, ribbed, knurled]
 
 /* [Hidden] */
 sp_row = sp400_row(thread_od);
 neck_od = sp_row[6];
 neck_id = neck_od - 2 * neck_wall;
 
-lid_height = sp_row[3] + lid_wall - 0.5;
+cap_height = sp_row[3] + cap_wall - 0.5;
 
 /**
  * sp_cap uses the thread profile height / 5 + 2 * $slop as the additional
  * space that needs to go between the neck and cap. We need this value so
- * we can have a rough idea of what the lid OD will be.
+ * we can have a rough idea of what the cap OD will be.
  */
 
 space = sp_row[8] / 5 + 2 * $slop;
-lid_od = thread_od + space + 2 * lid_wall;
+cap_od = thread_od + space + 2 * cap_wall;
 
 diff("cut")
 cyl(h = height,
-    d = lid_od,
+    d = cap_od,
     anchor = BOT,
     chamfer1 = bottom_outside_chamfer,
     ) {
@@ -63,9 +63,9 @@ cyl(h = height,
         tag("cut") position(TOP) cyl(h=height - bottom_thick, d = neck_id, anchor=TOP, chamfer1 = bottom_inner_chamfer, extra2=0.1);
 }
 
-back(lid_od + 10)
+back(cap_od + 10)
 diff("cut") 
-sp_cap(diam = thread_od, type = 400, wall = lid_wall, anchor = BOT, texture=lid_pattern) {
+sp_cap(diam = thread_od, type = 400, wall = cap_wall, anchor = BOT, texture=cap_pattern) {
     position(BOT)
     tag("cut") text3d(label_text, h=0.2, anchor=TOP, size=label_font_size, atype="ycenter", font=font, orient=DOWN);
 }
