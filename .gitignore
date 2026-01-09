@@ -1,0 +1,22 @@
+# --- VIM ---
+*.swp
+
+# --- VScode ---
+.vscode/
+
+# --- OpenSCAD build artifacts ---
+*.stl
+*.3mf
+
+# --- Generated output folders ---
+out_*/
+build/
+dist/
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+
+# --- OS ---
+.DS_Store
