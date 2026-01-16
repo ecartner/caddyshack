@@ -5,6 +5,7 @@
 include <BOSL2/std.scad>
 include <BOSL2/bottlecaps.scad>
 use <../lib/sp400.scad>
+use <sp400_cap.scad>
 
 /* [Setup] */
 // Minimum fragment angle
@@ -41,31 +42,31 @@ sp_row = sp400_row(thread_od);
 neck_od = sp_row[6];
 neck_id = neck_od - 2 * neck_wall;
 
-cap_height = sp_row[3] + cap_wall - 0.5;
-
-/**
- * sp_cap uses the thread profile height / 5 + 2 * $slop as the additional
- * space that needs to go between the neck and cap. We need this value so
- * we can have a rough idea of what the cap OD will be.
- */
-
+// sp_cap uses the thread profile height / 5 + 2 * $slop as the additional
+// space that needs to go between the neck and cap. We need this value so
+// we can have a rough idea of what the cap OD will be.
+T = sp_row[1];
 space = sp_row[8] / 5 + 2 * $slop;
-cap_od = thread_od + space + 2 * cap_wall;
+cap_od = T + space + 2 * cap_wall;
 
 diff("cut")
-cyl(h = height,
-    d = cap_od,
-    anchor = BOT,
-    chamfer1 = bottom_outside_chamfer,
-    ) {
+  cyl(
+    h=height,
+    d=cap_od,
+    anchor=BOT,
+    chamfer1=bottom_outside_chamfer,
+  ) {
 
-        position(TOP) down(0.1) sp_neck(thread_od, 400, id = neck_id, anchor=BOT);
-        tag("cut") position(TOP) cyl(h=height - bottom_thick, d = neck_id, anchor=TOP, chamfer1 = bottom_inner_chamfer, extra2=0.1);
-}
+    position(TOP) down(0.1) sp_neck(thread_od, 400, id=neck_id, anchor=BOT);
+    tag("cut") position(TOP) cyl(h=height - bottom_thick, d=neck_id, anchor=TOP, chamfer1=bottom_inner_chamfer, extra2=0.1);
+  }
 
-back(cap_od + 10)
-diff("cut") 
-sp_cap(diam = thread_od, type = 400, wall = cap_wall, anchor = BOT, texture=cap_pattern) {
-    position(BOT)
-    tag("cut") text3d(label_text, h=0.2, anchor=TOP, size=label_font_size, atype="ycenter", font=font, orient=DOWN);
-}
+back(cap_od + 10) sp400_standard_cap(
+    nominal_thread_od=thread_od,
+    cap_wall=cap_wall,
+    texture=cap_pattern,
+    text=label_text,
+    font=font,
+    font_size=label_font_size,
+    anchor=BOT
+  );
