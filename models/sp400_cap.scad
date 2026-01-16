@@ -21,9 +21,50 @@ label_text = "";
 label_font_size = 15; //[8:40]
 font = "Liberation Sans:style=Bold";
 // Cap outside texture
-cap_pattern = "ribbed"; // [none, ribbed, knurled]
+texture = "ribbed"; // [none, ribbed, knurled]
 
-diff("cut")
-  sp_cap(diam=thread_od, type=400, wall=cap_wall, anchor=BOT, texture=cap_pattern)
-    position(BOT)
-      tag("cut") text3d(label_text, h=0.2, anchor=TOP, size=label_font_size, atype="ycenter", font=font, orient=DOWN);
+/* Hidden */
+
+sp400_standard_cap(
+  nominal_thread_od=thread_od,
+  cap_wall=cap_wall,
+  texture=texture,
+  text=label_text,
+  font_size=label_font_size,
+  font=font,
+  anchor=BOT,
+);
+
+// Module: sp400_standard_cap()
+// Synopsis: Generate a standard (flat) SP-400 cap with optional labeling
+module sp400_standard_cap(
+  nominal_thread_od,
+  cap_wall,
+  texture = "ribbed",
+  text = "",
+  text_depth = 0.2,
+  font = "Liberation Sans:style=Bold",
+  font_size = 10,
+  anchor,
+  spin = 0,
+  orient = UP
+) {
+
+  diff() sp_cap(
+      diam=nominal_thread_od,
+      type=400,
+      wall=cap_wall,
+      anchor=anchor,
+      spin=spin,
+      orient=orient,
+      texture=texture
+    ) position(BOT) tag("remove") text3d(
+            text,
+            h=text_depth,
+            anchor=TOP,
+            size=font_size,
+            atype="ycenter",
+            font=font,
+            orient=DOWN
+          );
+}
