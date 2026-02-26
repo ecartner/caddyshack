@@ -1,0 +1,26 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "7x50": {
+            "$fa": "4",
+            "$fs": "0.25",
+            "$slop": "0.15",
+            "bit_cap_clearance": "1",
+            "bit_length": "50",
+            "bottom_inner_chamfer": "2",
+            "bottom_outside_chamfer": "2",
+            "bottom_thick": "2",
+            "cap_pattern": "none",
+            "cap_wall": "2",
+            "font": "Liberation Sans:style=Bold",
+            "hex_hole_depth": "14",
+            "hex_hole_size": "7",
+            "hex_space": "4",
+            "label_font_size": "15",
+            "label_text": "",
+            "neck_inner_height": "6",
+            "neck_wall": "2",
+            "thread_od": "38"
+        }
+    }
+}
