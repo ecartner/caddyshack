@@ -20,7 +20,7 @@ section_view = false;
 // Minimum neck inner diameter (mm)
 min_neck_id = 52; // [13:112]
 // Body, Cap and Neck wall thickness
-wall = 1.84; // 0.01
+wall = 1.67; // 0.01
 // Container interior height (mm)
 interior_height = 40; // [20:300]
 bottom_thick = 2; // 0.1
