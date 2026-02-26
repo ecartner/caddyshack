@@ -1,0 +1,26 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "60x40": {
+            "$fa": "2",
+            "$fs": "0.25",
+            "$slop": "0.15",
+            "bottom_inner_chamfer": "2",
+            "bottom_outside_chamfer": "2",
+            "bottom_thick": "2",
+            "cap_pattern": "ribbed",
+            "font": "Liberation Sans:style=Bold",
+            "interior_height": "40",
+            "label_font_size": "15",
+            "label_text": "",
+            "min_neck_id": "52",
+            "section_view": "false",
+            "taper_inner_walls": "true",
+            "texture": "trunc_diamonds",
+            "texture_depth": "0.3",
+            "texture_grid": "[8, 8]",
+            "texture_taper": "0.1",
+            "wall": "1.67"
+        }
+    }
+}

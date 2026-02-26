@@ -22,7 +22,7 @@ min_neck_id = 52; // [13:112]
 // Body, Cap and Neck wall thickness
 wall = 1.84; // 0.01
 // Container interior height (mm)
-interior_height = 40; // [20:160]
+interior_height = 40; // [20:300]
 bottom_thick = 2; // 0.1
 bottom_inner_chamfer = 2; // 0.1
 taper_inner_walls = true;
