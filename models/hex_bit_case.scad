@@ -17,16 +17,16 @@ $slop = 0.15;
 
 /* [Bit] */
 // Distance across hex flats
-hex_hole_size = 6.5; // [4:0.1:20]
+hex_hole_size = 7.0; // [4:0.1:20]
 hex_hole_depth = 9.0; // 0.1
 // Distance between neighboring flats
-hex_space = 3; // [0.8:0.2:6]
+hex_space = 4; // [0.8:0.1:6]
 bit_length = 25.2; // 0.1
 bit_cap_clearance = 1.0; // 0.1
 
 /* [Container] */
 // Vertical wall thickness
-wall = 1.84; //0.01
+wall = 1.67; //0.01
 // Thread outside diameter
 thread_od = 60; // [18, 20, 22, 24, 28, 30, 33, 35, 38, 40, 43, 45, 48, 51, 53, 58, 60, 63, 66, 70, 75, 77, 83, 89, 100, 110, 120]
 neck_inner_height = 6.0; // 0.1

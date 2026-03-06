@@ -14,7 +14,7 @@
             "font": "Liberation Sans:style=Bold",
             "hex_hole_depth": "30",
             "hex_hole_size": "7",
-            "hex_space": "4",
+            "hex_space": "3",
             "jar_pattern": "trunc_diamonds",
             "label_font_size": "15",
             "label_text": "",
@@ -22,7 +22,8 @@
             "texture_depth": "0.29999999999999999",
             "texture_grid": "[8, 8]",
             "texture_taper": "0.10000000000000001",
-            "thread_od": "38"
+            "thread_od": "35",
+            "wall": "1.6699999999999999"
         },
         "7x89": {
             "$fa": "4",
@@ -37,7 +38,7 @@
             "font": "Liberation Sans:style=Bold",
             "hex_hole_depth": "70",
             "hex_hole_size": "7",
-            "hex_space": "4",
+            "hex_space": "3",
             "jar_pattern": "trunc_diamonds",
             "label_font_size": "15",
             "label_text": "",
@@ -45,7 +46,8 @@
             "texture_depth": "0.29999999999999999",
             "texture_grid": "[8, 8]",
             "texture_taper": "0.10000000000000001",
-            "thread_od": "38"
+            "thread_od": "35",
+            "wall": "1.6699999999999999"
         },
         "19x50": {
             "$fa": "4",
@@ -60,7 +62,7 @@
             "font": "Liberation Sans:style=Bold",
             "hex_hole_depth": "30",
             "hex_hole_size": "7",
-            "hex_space": "4",
+            "hex_space": "3.5",
             "jar_pattern": "trunc_diamonds",
             "label_font_size": "15",
             "label_text": "",
@@ -68,8 +70,8 @@
             "texture_depth": "0.29999999999999999",
             "texture_grid": "[8, 8]",
             "texture_taper": "0.10000000000000001",
-            "thread_od": "60",
-            "wall": "1.8400000000000001"
+            "thread_od": "58",
+            "wall": "1.6699999999999999"
         },
         "19x89": {
             "$fa": "4",
@@ -84,7 +86,7 @@
             "font": "Liberation Sans:style=Bold",
             "hex_hole_depth": "70",
             "hex_hole_size": "7",
-            "hex_space": "4",
+            "hex_space": "3.5",
             "jar_pattern": "trunc_diamonds",
             "label_font_size": "15",
             "label_text": "",
@@ -92,8 +94,56 @@
             "texture_depth": "0.29999999999999999",
             "texture_grid": "[8, 8]",
             "texture_taper": "0.10000000000000001",
-            "thread_od": "60",
-            "wall": "1.8400000000000001"
+            "thread_od": "58",
+            "wall": "1.6699999999999999"
+        },
+        "19x25": {
+            "$fa": "4",
+            "$fs": "0.25",
+            "$slop": "0.14999999999999999",
+            "bit_cap_clearance": "1",
+            "bit_length": "25.199999999999999",
+            "bottom_inner_chamfer": "2",
+            "bottom_outside_chamfer": "2",
+            "bottom_thick": "2",
+            "cap_pattern": "ribbed",
+            "font": "Liberation Sans:style=Bold",
+            "hex_hole_depth": "9",
+            "hex_hole_size": "7",
+            "hex_space": "3.5",
+            "jar_pattern": "none",
+            "label_font_size": "15",
+            "label_text": "",
+            "neck_inner_height": "6",
+            "texture_depth": "0.29999999999999999",
+            "texture_grid": "[8, 8]",
+            "texture_taper": "0.10000000000000001",
+            "thread_od": "58",
+            "wall": "1.6699999999999999"
+        },
+        "7x25": {
+            "$fa": "4",
+            "$fs": "0.25",
+            "$slop": "0.14999999999999999",
+            "bit_cap_clearance": "1",
+            "bit_length": "24.999999999999996",
+            "bottom_inner_chamfer": "2",
+            "bottom_outside_chamfer": "2",
+            "bottom_thick": "2",
+            "cap_pattern": "ribbed",
+            "font": "Liberation Sans:style=Bold",
+            "hex_hole_depth": "9.9999999999999964",
+            "hex_hole_size": "7",
+            "hex_space": "3",
+            "jar_pattern": "none",
+            "label_font_size": "15",
+            "label_text": "",
+            "neck_inner_height": "6",
+            "texture_depth": "0.29999999999999999",
+            "texture_grid": "[8, 8]",
+            "texture_taper": "0.10000000000000001",
+            "thread_od": "35",
+            "wall": "1.6699999999999999"
         }
     }
 }
