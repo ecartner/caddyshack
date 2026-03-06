@@ -1,0 +1,135 @@
+/**
+ * Straight wall OD containers with screw on caps using SP-400 thread.
+ * Thread size is picked based on minimum neck ID and wall thickness.
+ **/
+include <BOSL2/std.scad>
+include <BOSL2/bottlecaps.scad>
+use <../lib/sp400.scad>
+
+/* [Setup] */
+// Minimum fragment angle
+$fa = 4;
+// Minimum fragment size
+$fs = 0.25;
+// Thread slop
+$slop = 0.15;
+// Render sectional view of container
+section_view = false;
+
+/* [Container] */
+// Body, Cap and Neck wall thickness
+wall = 1.67; // 0.01
+// Minimum neck inner diameter (mm)
+min_neck_id = 52; // [13:112]
+// Container interior height (mm)
+interior_height = 40; // [20:300]
+bottom_thick = 2; // 0.1
+bottom_inner_chamfer = 2; // 0.1
+
+// Only applies to "none" texture
+bottom_outside_chamfer = 2; // 0.1
+
+/* [Textures] */
+// Cap outside texture
+cap_pattern = "ribbed"; // [none, ribbed, knurled]
+// Outside wall texture pattern
+jar_pattern = "none"; // [none, bricks, checkers, cones, cubes, diamonds, dimples, dots, hex_grid, hills, pyramids, ribs, rough, tri_grid, trunc_diamonds, trunc_pyramids, trunc_ribs, wave_ribs]
+// Depth 
+texture_depth = 0.3; // [-2:0.1:2]
+
+// Tile size (mm)
+texture_grid = [8, 8]; // [5:50]
+
+// Length of transition from full texture to none
+texture_taper = 0.1; // [0:0.05:0.5]
+
+
+/* [Label] */
+label_text = "";
+label_font_size = 15; //[8:40]
+font = "Liberation Sans:style=Bold";
+
+/* [Hidden] */
+sp_row = sp400_row_for_neck_id(min_neck_id, wall);
+thread_od = sp_row[1];
+thread_size = sp_row[0];
+neck_od = sp_row[6];
+neck_id = neck_od - 2 * wall;
+neck_height = sp_row[3];
+
+echo("SP-400 Thread Size: ", thread_size);
+echo("Neck ID:            ", neck_id);
+
+cap_height = sp_row[3] + wall - 0.5;
+neck_holdback = 0.2;
+
+/**
+ * sp_cap uses the thread profile height / 5 + 2 * $slop as the additional
+ * space that needs to go between the neck and cap. We need this value so
+ * we can have a rough idea of what the cap OD will be.
+ */
+
+space = sp_row[8] / 5 + 2 * $slop;
+cap_od = thread_od + space + 2 * wall;
+
+body_od = neck_od;
+max_body_id = neck_id;
+body_height = interior_height - neck_height + neck_holdback + bottom_thick;
+total_height = body_height + neck_height;
+
+max_dim = cap_od > total_height ? cap_od : total_height;
+
+if (section_view) {
+  back_half(s=max_dim * 2) main();
+} else {
+  main();
+}
+
+module main() {
+  if (jar_pattern == "none") {
+    echo("Body OD:     ", body_od);
+    diff("cut")
+      cyl(
+        h=body_height,
+        d=body_od,
+        anchor=BOT,
+        chamfer1=bottom_outside_chamfer,
+      ) {
+        attach(TOP, BOT) down(neck_holdback) sp_neck(thread_size, 400, id=neck_id);
+        tag("cut") position(TOP) cutout();
+      }
+  } else {
+    echo("Body OD:     ", body_od + 2*texture_depth);
+    diff("cut")
+      cyl(
+        h=body_height,
+        d=body_od,
+        anchor=BOT,
+        texture=jar_pattern,
+        tex_size=texture_grid,
+        tex_depth=texture_depth,
+        tex_taper=texture_taper,
+      ) {
+        attach(TOP, BOT) down(neck_holdback) sp_neck(thread_size, 400, id=neck_id);
+        tag("cut") position(TOP) cutout();
+      }
+  }
+
+  back(cap_od + 10)
+    diff("cut")
+      sp_cap(diam=thread_size, type=400, wall=wall, anchor=BOT, texture=cap_pattern)
+        position(BOT)
+          tag("cut") text3d(label_text, h=0.2, anchor=TOP, size=label_font_size, atype="ycenter", font=font, orient=DOWN);
+}
+
+module cutout() {
+  cyl(h=wall, d=neck_id, anchor=TOP, extra2=0.1)
+    position(BOT) cyl(
+        h=body_height - bottom_thick - wall,
+        d=max_body_id,
+        chamfer1=bottom_inner_chamfer,
+        extra2=0.1,
+        anchor=TOP,
+      );
+}
+
